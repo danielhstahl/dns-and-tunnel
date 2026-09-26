@@ -1,0 +1,3 @@
+# /volume1/docker/ntfy/etc/server.yml
+base-url: "https://<your-tailnet-url>.ts.net"  
+listen-http: ":6001"

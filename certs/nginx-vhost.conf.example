@@ -1,0 +1,36 @@
+# Example nginx vhost — drop this in /etc/nginx/sites-available/ on EACH
+# service host, adjust server_name / cert paths / proxy_pass per service,
+# symlink into sites-enabled, reload.
+#
+# This assumes 02-client-renew.sh on this same host has already written:
+#   /etc/ssl/step/<hostname>.crt
+#   /etc/ssl/step/<hostname>.key
+# and that RELOAD_CMD in that script is set to reload *this* nginx.
+
+server {
+    listen 443 ssl;
+    server_name nas.home.lab;          # <-- this service's hostname
+
+    ssl_certificate     /etc/ssl/step/nas.home.lab.crt;
+    ssl_certificate_key /etc/ssl/step/nas.home.lab.key;
+
+    # Sensible modern defaults; loosen only if an old client needs it.
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        # Whatever this service actually is — proxied app, static files,
+        # the NAS's own admin UI running on localhost, etc.
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+server {
+    # Optional: redirect stray HTTP hits to HTTPS instead of serving
+    # plaintext on this host.
+    listen 80;
+    server_name nas.home.lab;
+    return 301 https://$host$request_uri;
+}

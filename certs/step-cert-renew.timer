@@ -1,0 +1,25 @@
+# /etc/systemd/system/step-cert-renew.timer
+#
+# Install alongside step-cert-renew.service, then:
+#   sudo cp 02-client-renew.sh /usr/local/bin/02-client-renew.sh
+#   sudo chmod +x /usr/local/bin/02-client-renew.sh
+#   sudo cp step-cert-renew.service step-cert-renew.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now step-cert-renew.timer
+#
+# Check it's scheduled:
+#   systemctl list-timers step-cert-renew.timer
+#
+# Check logs from the last run:
+#   journalctl -u step-cert-renew.service -n 50
+
+[Unit]
+Description=Daily check for step-ca certificate renewal
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target

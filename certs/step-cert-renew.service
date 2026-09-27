@@ -1,0 +1,10 @@
+# /etc/systemd/system/step-cert-renew.service
+# Runs the renewal script once. Triggered on a schedule by the matching
+# .timer unit — don't enable this directly, enable the timer instead.
+
+[Unit]
+Description=Renew step-ca issued certificate
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/02-client-renew.sh

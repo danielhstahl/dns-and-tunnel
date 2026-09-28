@@ -1,0 +1,31 @@
+# Example nginx vhost — drop this in /etc/nginx/sites-available/ on EACH
+# service host, adjust server_name / proxy_pass per service, symlink into
+# sites-enabled, reload.
+#
+# This assumes issue-and-push.sh (running on the central host) has already
+# pushed these files here:
+#   /etc/ssl/le/<hostname>.crt   (fullchain)
+#   /etc/ssl/le/<hostname>.key
+
+server {
+    listen 443 ssl;
+    server_name nas.home.yourdomain.com;   # <-- this service's hostname
+
+    ssl_certificate     /etc/ssl/le/nas.home.yourdomain.com.crt;
+    ssl_certificate_key /etc/ssl/le/nas.home.yourdomain.com.key;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+server {
+    listen 80;
+    server_name nas.home.yourdomain.com;
+    return 301 https://$host$request_uri;
+}

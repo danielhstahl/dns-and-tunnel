@@ -1,0 +1,26 @@
+# /etc/systemd/system/le-renew.timer
+#
+# Install alongside le-renew.service, then:
+#   sudo cp issue-and-push.sh /usr/local/bin/issue-and-push.sh
+#   sudo cp hosts.conf /usr/local/bin/hosts.conf
+#   sudo chmod +x /usr/local/bin/issue-and-push.sh
+#   sudo cp le-renew.service le-renew.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now le-renew.timer
+#
+# Check it's scheduled:
+#   systemctl list-timers le-renew.timer
+#
+# Check logs from the last run:
+#   journalctl -u le-renew.service -n 100
+
+[Unit]
+Description=Daily check for Let's Encrypt cert renewal (DNS-01)
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target

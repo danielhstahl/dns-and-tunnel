@@ -1,0 +1,9 @@
+# /etc/systemd/system/le-renew.service
+# Runs issue-and-push.sh once. Enable the matching .timer, not this directly.
+
+[Unit]
+Description=Issue/renew Let's Encrypt certs via DNS-01 and push to hosts
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/issue-and-push.sh
